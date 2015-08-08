@@ -143,13 +143,33 @@
         android:layout_alignLeft="@+id/stayBtn"
         android:onClick="onDistanceBtn"
         android:text="最小距离(m)" />
+    
+     <EditText
+        android:id="@+id/speedEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/stayTimeEdit"
+        android:layout_below="@id/distanceEdit"
+        android:layout_toLeftOf="@+id/speedBtn"
+        android:ems="10"
+        android:hint="系数(0.1,0.25~0.5)"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/speedBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/speedEdit"
+        android:layout_alignLeft="@+id/stayBtn"
+        android:onClick="onSpeedBtn"
+        android:text="系数" />
 
     <TextView
         android:id="@+id/monitoringText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/distanceEdit"
+        android:layout_below="@+id/speedEdit"
         android:ems="10"
         android:gravity="left|bottom"
         android:text="提示信息" />

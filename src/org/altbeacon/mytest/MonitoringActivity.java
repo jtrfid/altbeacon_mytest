@@ -7,6 +7,8 @@ import java.util.Locale;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.logging.LogManager;
 import org.altbeacon.beacon.logging.Loggers;
+//import org.altbeacon.beacon.service.ArmaRssiFilter;
+import org.altbeacon.beacon.service.RunningAverageRssiFilter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -38,7 +40,7 @@ public class MonitoringActivity extends Activity {
 		public void getNearestBeacon(int type,Beacon beacon) {
 			String str = (type == NearestBeacon.GET_LOCATION_BEACON)?"游客定位":"展品定位";
 			if (beacon != null) {
-			   logToDisplay(str+"beacon="+beacon.getId2());	
+			   logToDisplay(str+","+beacon.getId2()+":"+beacon.getId3());	
 			}
 			else
 			   logToDisplay("无"+str+"Beacon.");
@@ -54,6 +56,7 @@ public class MonitoringActivity extends Activity {
     private EditText ScanPeriod_edit;  // 前台扫描周期
     private EditText StayTime_edit;  // 最小停留时间
     private EditText Distance_edit;  // 最小距离
+    private EditText Speed_edit;  // 收敛系数
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,24 +96,26 @@ public class MonitoringActivity extends Activity {
 		// 打印D级以上的TAG，和LogcatHelper全部，其它tag不打印
 		//Logformat = TAG + ":D LogcatHelper:V *:S";
 		
-		//打印D以上的TAG和BeaconSearcher，其他tag不打印(*:S)
+		// 打印D以上的TAG和BeaconSearcher，其他tag不打印(*:S)
 		//Logformat = TAG + ":D BeaconSearcher:D *:S";
+		
+		// 打印D以上的BeaconSearcher，其他tag不打印(*:S)
+		Logformat = "BeaconSearcher:D *:S";
 		
 		//Logformat = "RangedBeacon:V *:S";
 		
 		// 打印所有日志， priority=V | D | I | W | E ,级别由低到高
-		Logformat = "";
+		// Logformat = "";
 		
 		// 日志文件
 		loghelper.start(Logformat);  
 		
 		// "开始"按钮失效
 		start_logfile.setEnabled(false);
-		
-		
+				
 		// 获取BeaconSearcher唯一实例
         mBeaconSearcher = BeaconSearcher.getInstance(this);
-        
+                
     	// 显示默认前台扫描周期,default 1.1s
 		ScanPeriod_edit = (EditText)findViewById(R.id.ScanPeriod_edit);
         ScanPeriod_edit.setText("1.1");
@@ -122,6 +127,38 @@ public class MonitoringActivity extends Activity {
         //显示默认最小距离，用于展品定位
         Distance_edit = (EditText)findViewById(R.id.distanceEdit);
         Distance_edit.setText(""+mBeaconSearcher.getExhizibit_distance());
+
+//////////////////////////////////////////////////////////////////////////
+// 自回归滑动滤波
+//      /**
+//    	 * 设置Rssi滤波模型 
+//    	 * Default class for rssi filter/calculation implementation：RunningAverageRssiFilter.class
+//    	 * others：ArmaRssiFilter.class
+//    	 */
+//        BeaconSearcher.setRssiFilterImplClass(ArmaRssiFilter.class);
+//        
+//        // 收敛系数,仅用于ArmaRssiFilter
+//        Speed_edit = (EditText)findViewById(R.id.speedEdit);
+//        Speed_edit.setText("0.1");
+//        Button speedBtn = (Button)findViewById(R.id.speedBtn);
+//        speedBtn.setText("收敛系数");  
+
+/////////////////////////////////////////////////////////////////////////
+// 均值滤波
+        /**
+    	 * 设置Rssi滤波模型 
+    	 * Default class for rssi filter/calculation implementation：RunningAverageRssiFilter.class
+    	 * others：ArmaRssiFilter.class
+    	 */
+        BeaconSearcher.setRssiFilterImplClass(RunningAverageRssiFilter.class);
+        
+        // RSSI采样时间
+        Speed_edit = (EditText)findViewById(R.id.speedEdit);
+        Speed_edit.setText("20");
+        
+        Button speedBtn = (Button)findViewById(R.id.speedBtn);
+        speedBtn.setText("采样周期(s)");  
+////////////////////////////////////////////////////////////////////////////
         
         // 设置找到最近beacon的回调
         mBeaconSearcher.setNearestBeaconListener(mOnNearestBeaconListener);
@@ -207,10 +244,24 @@ public class MonitoringActivity extends Activity {
         mBeaconSearcher.setMin_stay_milliseconds(t);   
     }
     
-    //显示最小距离，用于展品定位
+    // 显示最小距离，用于展品定位
     public void onDistanceBtn(View view) {
     	String str = Distance_edit.getText().toString();
     	mBeaconSearcher.setExhibit_distance(Double.parseDouble(str));   
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    // 收敛系数，仅用于ArmaRssiFilter
+    // 采样周期，用于均值滤波
+    public void onSpeedBtn(View view) {
+    	String str = Speed_edit.getText().toString();
+    	
+    	// 收敛系数，仅用于ArmaRssiFilter
+    	// BeaconSearcher.setDEFAULT_ARMA_SPEED(Double.parseDouble(str));  
+    	
+        // 采样周期，用于均值滤波
+    	long t = (long)(Double.parseDouble(str) * 1000.0D);
+    	BeaconSearcher.setSampleExpirationMilliseconds(t);  
     }
     
     public void logToDisplay(final String line) {
