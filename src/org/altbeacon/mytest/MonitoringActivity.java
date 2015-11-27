@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.logging.LogManager;
 import org.altbeacon.beacon.logging.Loggers;
+import org.altbeacon.beacon.service.ArmaRssiFilter;
 //import org.altbeacon.beacon.service.ArmaRssiFilter;
 import org.altbeacon.beacon.service.RunningAverageRssiFilter;
 
@@ -140,6 +141,8 @@ public class MonitoringActivity extends Activity {
 //        // 收敛系数,仅用于ArmaRssiFilter
 //        Speed_edit = (EditText)findViewById(R.id.speedEdit);
 //        Speed_edit.setText("0.1");
+//        Speed_edit.setHint("系数(0.1,0.25~0.5)");
+//        
 //        Button speedBtn = (Button)findViewById(R.id.speedBtn);
 //        speedBtn.setText("收敛系数");  
 
@@ -155,6 +158,7 @@ public class MonitoringActivity extends Activity {
         // RSSI采样时间
         Speed_edit = (EditText)findViewById(R.id.speedEdit);
         Speed_edit.setText("20");
+        Speed_edit.setHint("周期(s)");
         
         Button speedBtn = (Button)findViewById(R.id.speedBtn);
         speedBtn.setText("采样周期(s)");  
@@ -182,6 +186,9 @@ public class MonitoringActivity extends Activity {
 				}
 			}
 		});
+    	
+    	// 查看手机蓝牙是否可用,若当前状态为不可用，则默认调用意图请求打开系统蓝牙
+    	mBeaconSearcher.checkBLEEnable();
 
         logToDisplay("Mstart,Mstop分别代表查找最近的beacon的开始和结束");
 	}
