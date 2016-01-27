@@ -7,8 +7,6 @@ import java.util.Locale;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.logging.LogManager;
 import org.altbeacon.beacon.logging.Loggers;
-import org.altbeacon.beacon.service.ArmaRssiFilter;
-//import org.altbeacon.beacon.service.ArmaRssiFilter;
 import org.altbeacon.beacon.service.RunningAverageRssiFilter;
 
 import android.app.Activity;
@@ -17,14 +15,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import edu.xidian.NearestBeacon.BeaconSearcher;
 import edu.xidian.NearestBeacon.BeaconSearcher.OnNearestBeaconListener;
 import edu.xidian.NearestBeacon.NearestBeacon;
 import edu.xidian.logtofile.LogcatHelper;
+//import org.altbeacon.beacon.service.ArmaRssiFilter;
 
 
 /**
@@ -300,7 +300,10 @@ public class MonitoringActivity extends Activity {
     	    public void run() {
     	    	//EditText editText = (EditText)MonitoringActivity.this.findViewById(R.id.monitoringText);
     	    	TextView editText = (TextView)MonitoringActivity.this.findViewById(R.id.monitoringText);
-       	    	editText.append(dateStr+"=="+line+"\n");            	    	    		
+       	    	editText.append(dateStr+"=="+line+"\n");  
+       	        // 滚动到底部
+       	    	ScrollView sv = (ScrollView)MonitoringActivity.this.findViewById(R.id.scrollView);
+       	    	sv.scrollTo(0, editText.getBottom());
     	    }
     	});
     }

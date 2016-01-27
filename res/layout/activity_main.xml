@@ -163,15 +163,23 @@
         android:layout_alignLeft="@+id/stayBtn"
         android:onClick="onSpeedBtn"
         android:text="系数" />
-
-    <TextView
-        android:id="@+id/monitoringText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    
+    <ScrollView
+        android:id="@+id/scrollView" 
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content" 
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/speedEdit"
-        android:ems="10"
-        android:gravity="left|bottom"
-        android:text="提示信息" />
+        android:layout_below="@+id/speedEdit" > 
+        <TextView
+	        android:id="@+id/monitoringText"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:isScrollContainer="true"      
+	        android:ems="10"
+	        android:gravity="left|bottom"
+	        android:text="提示信息" />
+     </ScrollView>
 
 </RelativeLayout>
